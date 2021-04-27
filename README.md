@@ -1,15 +1,15 @@
-** Introduction **
+**Introduction**
 
 This library is a complement of WifiManager by tzapu. The goal is to leverage the functionality of this amazing library and add saving to SPIFFS capabilities. 
 
 
-** Dependencies **
+**Dependencies**
 
 	"tzapu/WifiManager": "^0.15.0",
 	"fullstackelectron/FSESPIFFS": "^1.0.0"
 
 
-** Usage **
+**Usage**
 
 ```
 #include "FSEWifiManager.h"
