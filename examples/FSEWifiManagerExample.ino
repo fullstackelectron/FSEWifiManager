@@ -1,17 +1,3 @@
-** Introduction **
-
-This library is a complement of WifiManager by tzapu. The goal is to leverage the functionality of this amazing library and add saving to SPIFFS capabilities. 
-
-
-** Dependencies **
-
-	"tzapu/WifiManager": "^0.15.0",
-	"fullstackelectron/FSESPIFFS": "^1.0.0"
-
-
-** Usage **
-
-```
 #include "FSEWifiManager.h"
 
 FSEWifiManager myWifiManager;
@@ -24,14 +10,14 @@ void setup() {
   Serial.setTimeout(2000);
   // Wait for serial to initialize.
   while(!Serial) { }
-  
+
   //myWifiManager.resetSettings();
   myWifiManager.addParameter(IOT_URL_PARAM_NAME, "Iot Server URL", "https://api.thingspeak.com");
   myWifiManager.addParameter(IOT_API_KEY_PARAM_NAME, "API Key", "");
-  
+
   //myWifiManager.setSaveConfigCallback(saveConfig);
-  
-  if (!myWifiManager.begin("MYTESTSSID")) { // looks like something went wrong
+
+  if (!myWifiManager.begin("MYTESTSSID")) {
     //myWifiManager.resetSettings();
     ESP.reset();
   }
@@ -54,5 +40,3 @@ void loop() {
 void saveConfig() {
   Serial.println("If you wish to do something after saving");
 }
-```
-

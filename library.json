@@ -1,0 +1,27 @@
+{  
+  "name": "FSEWifiManager",
+  "version": "1.0.0",
+  "description": "Using wifimanager to save data to SPIFFS",
+  "keywords": "WifiManager SPIFFS",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/fullstackelectron/FSEDHT.git"
+  },
+  "authors":
+  [
+    {
+      "name": "Fullstack Electron",
+      "email": "info@fullstackelectron.com",
+      "url": "https://fullstackelectron.com"
+    }
+  ],
+  "dependencies": {
+	"tzapu/WifiManager": "^0.15.0",
+	"fullstackelectron/FSESPIFFS": "^1.0.0"
+  },
+  "license": "MIT",
+  "homepage": "https://fullstackelectron.com",
+  "frameworks": "*",
+  "platforms": "*"
+}
