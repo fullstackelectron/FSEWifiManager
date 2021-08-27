@@ -17,6 +17,10 @@
 
 
 class WiFiManagerParameter;
+class FSEWifiManagerParameterCheckBox: public WiFiManagerParameter{
+	using WiFiManagerParameter::WiFiManagerParameter;
+	void init(const char *id, const char *placeholder, const char *defaultValue, int length, const char *custom);
+};
 
 class FSEWifiManager: public WiFiManager{
 	using WiFiManager::WiFiManager;
@@ -24,7 +28,10 @@ public:
 	FSEWifiManager() : FSEWifiManager("/config.json") {};
 	FSEWifiManager(const char *fileName);
 	bool addParameter(const char *key,const char *placeHolder, const char *defaultValue);
+	bool addParameterCheckBox(const char *key,const char *placeHolder);
 	bool addParameter(const char *key,const char *placeHolder, const char *defaultValue, int size);
+	bool addParameter(const char *key,const char *placeHolder, const char *defaultValue, int size, const char *custom);
+
 	bool begin();
 	bool begin(const char *apName, const char *apPassword = NULL);
 
@@ -32,6 +39,10 @@ public:
 	virtual ~FSEWifiManager();
 	void saveConfigToSPIFFS();
 	const char *getByKey(const char* key);
+	void resetSettings();
+	bool has_wifi_settings();
+	String getNetwork();
+	bool  setHostname(const char * hostname);
 protected:
 	unsigned long _connectTimeout = 0;
 	template <typename Generic>
@@ -51,6 +62,7 @@ protected:
 	int connectWifi(String ssid, String pass);
 	bool _debug = true;
 private:
+	const char * _hostname = "";
 };
 
 #endif /* LIB_FSEWIFIMANAGER_FSEWIFIMANAGER_H_ */

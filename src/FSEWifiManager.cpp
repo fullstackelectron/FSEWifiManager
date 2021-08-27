@@ -16,7 +16,26 @@ FSEWifiManager::FSEWifiManager(const char *fileName) {
 	_mySpiffs.setConfigFile(fileName);
 	_max_params = PARAMS_BUCKET_SIZE;
 	_params = (WiFiManagerParameter**)malloc(_max_params * sizeof(WiFiManagerParameter*));
+	_network = "FSEESP" + String(ESP.getChipId());
 }
+
+String FSEWifiManager::getNetwork() {
+	return _network;
+}
+
+bool  FSEWifiManager::setHostname(const char * hostname){
+  //@todo max length 32
+  _hostname = hostname;
+}
+
+bool FSEWifiManager::has_wifi_settings() {
+	if (connectWifi("", "") == WL_CONNECTED)   {
+		//connected
+		return true;
+	}
+	return false;
+}
+
 
 void FSEWifiManager::saveConfigToSPIFFS(){
 	FSESPIFFSParams *p;
@@ -56,8 +75,16 @@ bool FSEWifiManager::initWifi() {
   return true;
 }
 
-bool FSEWifiManager::addParameter(const char *key,const char *placeHolder, const char *defaultValue, int size) {
-	WiFiManagerParameter *p = new WiFiManagerParameter(key, placeHolder, defaultValue, size);
+bool FSEWifiManager::addParameter(const char *key,const char *placeHolder, const char *defaultValue, int size, const char *custom){
+	WiFiManagerParameter *p;
+	if(key == NULL) {
+		Serial.println("Found null key param");
+		Serial.println(custom);
+		p = new WiFiManagerParameter(custom);
+	} else {
+		p = new WiFiManagerParameter(key, placeHolder, defaultValue, size, custom);
+	}
+
 	// adding parameter to parent
 	WiFiManager::addParameter(p);
 
@@ -77,6 +104,19 @@ bool FSEWifiManager::addParameter(const char *key,const char *placeHolder, const
 	_params[_paramsCount] = p;
 	_paramsCount++;
 	return true;
+}
+
+bool FSEWifiManager::addParameterCheckBox(const char *key,const char *placeHolder) {
+	String custom = "<br/><input id='{i}' name='{n}' value=0 type=checkbox {c}><label>{l}</label>";
+	custom.replace("{i}", key);
+	custom.replace("{n}", key);
+
+	custom.replace("{l}", placeHolder);
+	DEBUG_FSEWM(custom.c_str());
+	return addParameter(NULL, placeHolder, NULL, 10, custom.c_str());
+}
+bool FSEWifiManager::addParameter(const char *key,const char *placeHolder, const char *defaultValue, int size) {
+	return addParameter(key, placeHolder, defaultValue, size, "");
 }
 
 bool FSEWifiManager::addParameter(const char *key,const char *placeHolder, const char *defaultValue) {
@@ -126,6 +166,17 @@ int FSEWifiManager::connectWifi(String ssid, String pass) {
   }
 
   int connRes = waitForConnectResult();
+
+  if(connRes == WL_CONNECTED && _hostname != ""){
+    #ifdef ESP8266
+      WiFi.hostname(_hostname);
+      DEBUG_FSEWM(F("Hostname set"));
+      DEBUG_FSEWM(_hostname);
+    #elif defined(ESP32)
+      WiFi.setHostname(_hostname);
+    #endif
+  }
+
   return connRes;
 }
 
@@ -157,6 +208,12 @@ const char *FSEWifiManager::getByKey(const char* key) {
 		_configLoaded = true;
 	}
 	return _mySpiffs.getByKey(key);
+}
+
+void FSEWifiManager::resetSettings() {
+	WiFi.mode(WIFI_STA);
+	WiFi.disconnect(true);
+	delay(200);
 }
 
 uint8_t FSEWifiManager::waitForConnectResult() {
