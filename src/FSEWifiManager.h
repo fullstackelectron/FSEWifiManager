@@ -27,6 +27,7 @@ class FSEWifiManager: public WiFiManager{
 public:
 	FSEWifiManager() : FSEWifiManager("/config.json") {};
 	FSEWifiManager(const char *fileName);
+	boolean startConfigPortal(char const *apName, char const *apPassword);
 	bool addParameter(const char *key,const char *placeHolder, const char *defaultValue);
 	bool addParameterCheckBox(const char *key,const char *placeHolder);
 	bool addParameter(const char *key,const char *placeHolder, const char *defaultValue, int size);
@@ -44,7 +45,29 @@ public:
 	String getNetwork();
 	bool  setHostname(const char * hostname);
 protected:
-	unsigned long _connectTimeout = 0;
+    std::unique_ptr<DNSServer>        dnsServer;
+    std::unique_ptr<ESP8266WebServer> server;
+
+    IPAddress     _ap_static_ip;
+    IPAddress     _ap_static_gw;
+    IPAddress     _ap_static_sn;
+    const byte    DNS_PORT = 53;
+    const char*   _apName                 = "no-net";
+    const char*   _apPassword             = NULL;
+    String        _ssid                   = "";
+    String        _pass                   = "";
+    boolean       _removeDuplicateAPs     = true;
+    int           _minimumQuality         = -1;
+    int           getRSSIasQuality(int RSSI);
+    void (*_apcallback)(WiFiManager*) = NULL;
+    void (*_savecallback)(void) = NULL;
+    boolean       connect;
+    unsigned long _configPortalTimeout    = 0;
+    unsigned long _configPortalStart      = 0;
+    boolean       configPortalHasTimeout();
+    boolean       _shouldBreakAfterConfig = false;
+    unsigned long _connectTimeout = 0;
+    const char*   _customHeadElement      = "";
 	template <typename Generic>
 	void DEBUG_FSEWM(Generic text);
 	IPAddress _sta_static_sn;
@@ -61,6 +84,21 @@ protected:
 	uint8_t waitForConnectResult();
 	int connectWifi(String ssid, String pass);
 	bool _debug = true;
+	void handleRoot();
+	void setupConfigPortal();
+	boolean captivePortal();
+    boolean       isIp(String str);
+    String        toStringIp(IPAddress ip);
+    void handleNotFound();
+    void handleWifi(boolean scan);
+    String getLogo();
+    void handleInfo();
+    void handleReset();
+    void handleWifiSave();
+    template <class T>
+	auto optionalIPFromString(T *obj, const char *s) -> decltype(  obj->fromString(s)  ) {
+	  return  obj->fromString(s);
+	}
 private:
 	const char * _hostname = "";
 };
