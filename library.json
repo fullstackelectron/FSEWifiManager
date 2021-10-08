@@ -1,6 +1,6 @@
 {  
   "name": "FSEWifiManager",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "Using wifimanager to save data to SPIFFS",
   "keywords": "WifiManager SPIFFS",
   "repository":

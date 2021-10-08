@@ -44,6 +44,7 @@ public:
 	bool has_wifi_settings();
 	String getNetwork();
 	bool  setHostname(const char * hostname);
+	int connectWifi(String ssid, String pass);
 protected:
     std::unique_ptr<DNSServer>        dnsServer;
     std::unique_ptr<ESP8266WebServer> server;
@@ -82,7 +83,6 @@ protected:
 	boolean autoConnect(char const *apName, char const *apPassword);
 	bool _configLoaded = false;
 	uint8_t waitForConnectResult();
-	int connectWifi(String ssid, String pass);
 	bool _debug = true;
 	void handleRoot();
 	void setupConfigPortal();
